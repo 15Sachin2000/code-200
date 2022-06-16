@@ -1,0 +1,70 @@
+const express=require('express');
+const app=express();
+const server=require('http').Server(app);
+const io=require('socket.io')(server);
+const { v4: uuidV4 } = require('uuid');
+const bp=require('body-parser');
+const url=require('url');
+// const { ExpressPeerServer } = require("peer");
+// const peerServer = ExpressPeerServer(server, { // Here we are actually defining our peer server that we want to host
+//     debug: true,
+// })
+// app.use("/peerjs", peerServer); // Now we just need to tell our application to server our server at "/peerjs".Now our server is up and running
+app.use(bp.urlencoded({extended:true}));
+app.set('view engine','ejs');
+app.use(express.static(__dirname+'/public'));
+io.on('connection',function(socket){
+    //console.log('hello worldd');
+    socket.on('join',function(uid,id){
+        // console.log(uid);
+        // console.log(id);
+         socket.join(uid);
+        socket.broadcast.to(uid).emit('user-connected',id);
+        socket.on('disconnect',function(){
+            socket.broadcast.to(uid).emit('user-dis',id);
+        })
+    });
+    socket.on('message',function(name,message,uid){
+        console.log(name);
+        console.log(message);
+        socket.broadcast.to(uid).emit('receive',name,message);
+    });
+    socket.on('editor_message',function(message,uid){
+        socket.broadcast.to(uid).emit('text_editor',message);
+    })
+});
+// app.post('/join',function(req,res){
+//     console.log('hello world');
+//     console.log(req.body.name);
+// })
+app.get('/',function(req,res){
+    //res.redirect(`/${uuidV4()}`);
+    res.sendFile(__dirname+'/index.html');
+})
+app.get('/join',function(req,res){
+    res.redirect(url.format({
+        pathname:`/${uuidV4()}`,
+        query:req.query
+    }));
+    // res.redirect( // When we reach /join route we redirect the user to a new unique route with is formed using Uuid 
+    //     url.format({ // The url module provides utilities for URL resolution and parsing.
+    //         pathname: `/join/${uuidV4()}`, // Here it returns a string which has the route and the query strings.
+    //         query: req.query, // For Eg : /join/A_unique_Number?Param=Params. So we basically get redirected to our old_Url/join/id?params
+    //     })
+    // );
+})
+app.get('/joinold',function(req,res){
+    res.redirect(url.format({
+        pathname:req.query.meeting_id,
+        query:req.query
+    }));
+})
+app.get('/:id',function(req,res){
+    const uid=req.params.id;
+    console.log(uid);
+    const nam=req.query.name;
+    res.render('file',{id:uid,name:nam});
+})
+server.listen(3000,function(){
+    console.log('app is listening at port 3000');
+})
