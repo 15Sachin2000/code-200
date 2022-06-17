@@ -55,7 +55,7 @@ navigator.mediaDevices.getUserMedia({
 
 peer.on('open',function(id){
     //console.log("my name is sachin");
-    socket.emit('join',uid,id);
+    socket.emit('join',uid,id,name);
 });
 socket.on('user-dis',function(id){
     if(peers[id])
@@ -109,7 +109,16 @@ console.log('hello world');
     //console.log(name);
     chat_message.value='';
 });
-
+const names=document.getElementById('editors');
+socket.on('name',function(friendname){
+  names.innerHTML="";
+  //console.log(friendname);
+  // console.log(friendname);
+  friendname.forEach(data=>{
+    names.innerHTML+=`<li class="list-group-item">${data}</li>`;
+  });
+  
+})
 const editor=document.getElementById('editor');
 function changeInTextEditor()
 {

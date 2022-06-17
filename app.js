@@ -13,13 +13,26 @@ const url=require('url');
 app.use(bp.urlencoded({extended:true}));
 app.set('view engine','ejs');
 app.use(express.static(__dirname+'/public'));
+var arr={};
 io.on('connection',function(socket){
     //console.log('hello worldd');
-    socket.on('join',function(uid,id){
+    
+    socket.on('join',function(uid,id,name){
         // console.log(uid);
         // console.log(id);
          socket.join(uid);
+         if(arr.hasOwnProperty(uid))
+         {
+         arr[uid].push(name);
+         }
+         else
+         {
+            arr[uid]=[name];
+         }
+        
         socket.broadcast.to(uid).emit('user-connected',id);
+        io.sockets.to(uid).emit('name',arr[uid]);
+        console.log(arr[uid]);
         socket.on('disconnect',function(){
             socket.broadcast.to(uid).emit('user-dis',id);
         })
