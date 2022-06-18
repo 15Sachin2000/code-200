@@ -6,10 +6,11 @@ const { v4: uuidV4 } = require('uuid');
 const bp=require('body-parser');
 const url=require('url');
 // const { ExpressPeerServer } = require("peer");
-// const peerServer = ExpressPeerServer(server, { // Here we are actually defining our peer server that we want to host
-//     debug: true,
-// })
-// app.use("/peerjs", peerServer); // Now we just need to tell our application to server our server at "/peerjs".Now our server is up and running
+var ExpressPeerServer = require('peer').ExpressPeerServer;
+const peerServer = ExpressPeerServer(server, { // Here we are actually defining our peer server that we want to host
+    debug: true,
+});
+app.use("/peerjs", peerServer); // Now we just need to tell our application to server our server at "/peerjs".Now our server is up and running
 app.use(bp.urlencoded({extended:true}));
 app.set('view engine','ejs');
 app.use(express.static(__dirname+'/public'));
@@ -19,7 +20,7 @@ io.on('connection',function(socket){
     
     socket.on('join',function(uid,id,name){
         // console.log(uid);
-        // console.log(id);
+         console.log(id);
          socket.join(uid);
          if(arr.hasOwnProperty(uid))
          {
@@ -78,6 +79,6 @@ app.get('/:id',function(req,res){
     const nam=req.query.name;
     res.render('file',{id:uid,name:nam});
 })
-server.listen(3000,function(){
+server.listen(process.env.PORT || 3000,function(){
     console.log('app is listening at port 3000');
 })

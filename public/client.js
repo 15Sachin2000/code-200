@@ -22,9 +22,10 @@ const socket=io('/');
 // console.log(uid);
 const dis=document.getElementById('video-grid');
 const peer = new Peer(undefined, {
-   // path:'/peerjs',
+    secure: true, 
+    path:'/peerjs',
     host: '/',
-    port: '3001'
+    port: '443'
   });
 const myv=document.createElement('video');
 let myVideoStream;
