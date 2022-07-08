@@ -3,27 +3,21 @@
 var cm=CodeMirror.fromTextArea(document.getElementById('textarea'),{
     styleActiveLine: true,
     lineNumbers: true,
-    //mode:'javascript',
     theme:'darcula',
     mode:'text/x-csrc',
-   // tabSize:2,
-   //value:'sachin kanyal',
     matchBrackets:true,
-   // lineWrapping: false
 });
 var value='';
 for(var i=0;i<14;i++)
 {
     value+='\n';
 }
-//val+='sachin';
 cm.setValue(value);
 const socket=io('/');
-// console.log(uid);
 const dis=document.getElementById('video-grid');
 const peer = new Peer(undefined, {
     secure: true, 
-    path:'/peerjs',
+   path:'/peerjs',
     host: '/',
     port: '443'
   });
@@ -55,7 +49,6 @@ navigator.mediaDevices.getUserMedia({
 });
 
 peer.on('open',function(id){
-    //console.log("my name is sachin");
     socket.emit('join',uid,id,name);
 });
 socket.on('user-dis',function(id){
@@ -81,13 +74,6 @@ function addvideo(video,stream)
     });
     dis.append(video);
 };
-// var send=document.getElementById('send');
-// send.onclick(function(){
-//     var chat=document.getElementById('chat_message');
-//     var message=chat.value;
-//     console.log(message);
-//     chat.value="";
-// });
 const messages=document.querySelector('.messages');
 socket.on('receive',function(name,message){
     console.log(name,message);
@@ -98,23 +84,18 @@ socket.on('receive',function(name,message){
 });
 let send=document.getElementById('send');
 send.addEventListener('click',function(){
-    //console.log('hello world');
     let chat_message=document.getElementById('chat_message');
-    // console.log(chat_message.value);
     messages.innerHTML+=`<div class="message">
     <b><i class="far fa-user-circle"></i> <span> me </span> </b> 
     <span>${chat_message.value}</span>
 </div>`;
 console.log('hello world');
     socket.emit('message',name,chat_message.value,uid);
-    //console.log(name);
     chat_message.value='';
 });
 const names=document.getElementById('editors');
 socket.on('name',function(friendname){
   names.innerHTML="";
-  //console.log(friendname);
-  // console.log(friendname);
   friendname.forEach(data=>{
     names.innerHTML+=`<li class="list-group-item">${data}</li>`;
   });
